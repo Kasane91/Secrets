@@ -4,7 +4,6 @@ const express = require("express");
 const ejs = require("ejs");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
-const encrypt = require("mongoose-encryption");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
@@ -41,7 +40,6 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  console.log(req.body);
   User.findOne({ user: req.body.username }, (err, foundUser) => {
     if (foundUser) {
       bcrypt.compare(req.body.password, foundUser.password, (err, result) => {
