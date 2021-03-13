@@ -3,6 +3,7 @@ const express = require("express");
 const ejs = require("ejs");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
+const encrypt = require("mongoose-encryption");
 
 const app = express();
 
@@ -15,17 +16,6 @@ mongoose.connect(
   { useNewUrlParser: true, useUnifiedTopology: true }
 );
 
-const QuickTest = new mongoose.Schema({
-  title: {
-    type: String,
-    required: [true],
-  },
-  content: {
-    type: String,
-    required: [true],
-  },
-});
-
 const userSchema = new mongoose.Schema({
   user: {
     type: String,
@@ -36,6 +26,10 @@ const userSchema = new mongoose.Schema({
     required: [true],
   },
 });
+
+const secret = "Thisismylongsecretstring";
+
+userSchema.plugin(encrypt, { secret: secret, encryptedFields: ["password"] });
 
 const User = new mongoose.model("User", userSchema);
 
@@ -59,6 +53,7 @@ app.post("/login", (req, res) => {
   User.findOne({ user: req.body.username }, (err, foundUser) => {
     if (foundUser) {
       if (req.body.password === foundUser.password) {
+        console.log(foundUser);
         res.redirect("/secrets");
       } else {
         res.send("Password did not match");
@@ -86,7 +81,6 @@ app
       if (err) {
         console.log(err);
       } else {
-        console.log(newUser);
         res.redirect("/secrets");
       }
     });
