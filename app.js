@@ -4,7 +4,7 @@ const ejs = require("ejs");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const encrypt = require("mongoose-encryption");
-
+require("dotenv").config();
 const app = express();
 
 app.use(express.static("public"));
@@ -12,7 +12,7 @@ app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
 
 mongoose.connect(
-  "mongodb+srv://admin-sondre:test123@cluster0.rsua0.mongodb.net/UserDB?retryWrites=true&w=majority",
+  `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.rsua0.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`,
   { useNewUrlParser: true, useUnifiedTopology: true }
 );
 
@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-const secret = "Thisismylongsecretstring";
+const secret = process.env.SECRET;
 
 userSchema.plugin(encrypt, { secret: secret, encryptedFields: ["password"] });
 
